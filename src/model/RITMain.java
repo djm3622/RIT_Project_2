@@ -12,8 +12,9 @@ public class RITMain {
 
     /** the observers of this model */
     private final List<Observer<RITMain>> observers;
+
     private final ArrayList<Integer> arr_i;
-    private final double DIM;
+    private final int DIM;
     private int[][] imageMatrix;
 
     /**
@@ -22,18 +23,19 @@ public class RITMain {
     public RITMain(ArrayList<Integer> arr_i) {
         this.observers = new LinkedList<>();
         this.arr_i = arr_i;
-        this.DIM = Math.sqrt(arr_i.size());
+        this.DIM = (int) Math.sqrt(arr_i.size());
         this.imageMatrix = new int[(int) this.DIM][(int) this.DIM];
     }
 
-    public double getDIM() {
+    public int getDIM() {
         return this.DIM;
     }
 
-    private void createImageMatrix() {
+    public int[][] getImageMatrix() {
+        return imageMatrix;
+    }
 
-        // use the matrix created here to display on the viewer
-
+    public void createImageMatrix() {
         int y = 0;
         int x = 0;
         for (int e: this.arr_i) {

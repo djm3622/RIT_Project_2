@@ -1,5 +1,7 @@
 package model;
 
+import java.util.List;
+
 /**
  * Represents a Quadtree node in the tree for an image compressed using the
  * Rich Image Tool file format.

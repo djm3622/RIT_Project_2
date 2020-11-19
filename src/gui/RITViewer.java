@@ -2,27 +2,29 @@ package gui;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import model.Observer;
+import model.CustomException;
 import model.RITMain;
-import model.RITQTNode;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
-public class RITViewer extends Application implements Observer<RITMain> {
-    private List<Integer> arr_i;
+public class RITViewer extends Application {
+    private ArrayList<Integer> arr_i;
     private static String[] arg;
     private RITMain model;
-    private RITQTNode image;
 
     /**
      *
-     *
+     * initialize and check for errors
      *
      */
     @Override
@@ -30,75 +32,107 @@ public class RITViewer extends Application implements Observer<RITMain> {
         arr_i = new ArrayList<>();
 
         try {
-            Scanner in = new Scanner(new FileReader(arg[0]));
-            while (true) {
-                arr_i.add(Integer.parseInt(in.nextLine()));
+            try {
+                if (arg.length != 1) {
+                    throw new CustomException("Invalid amount of arguments.");
+                }
+                Scanner in = new Scanner(new FileReader(arg[0]));
+                while (true) {
+                    int temp = Integer.parseInt(in.nextLine());
+                    if (temp > 255 || temp < 0) {
+                        throw new CustomException("Pixel value outside the range 0-255.");
+                    }
+                    this.arr_i.add(temp);
+                }
+            } catch (FileNotFoundException e) {
+                throw new CustomException("File not found.");
+            } catch (NumberFormatException e) {
+                throw new CustomException("Pixel value not an integer.");
+            } catch (NoSuchElementException ignored) {
+                model = new RITMain(this.arr_i);
+
+                if (!checkForSquare(model.getDIM())) {
+                    throw new CustomException("Dimensions not a square.");
+                }
+                model.createImageMatrix();
             }
-        } catch (FileNotFoundException e) {
-            System.out.println("File not found.");
-        } catch (NoSuchElementException e) {
-            System.out.print("");
+        } catch (CustomException e) {
+            System.out.println(e.toString());
+            Platform.exit();
         }
-        model = new RITMain();
     }
 
     /**
      *
+     * check for the dimensions
      *
+     * @param num the dimesnions
+     * @return whether it is a square or not
+     */
+    private boolean checkForSquare(int num) {
+        int check = 1;
+        while (true) {
+            if (num == check) {
+                return true;
+            } else if (num < check) {
+                return false;
+            } else {
+                check *= 2;
+            }
+        }
+    }
+
+    /**
      *
-     * @param stage
-     * @throws Exception
+     * create gui elemetns and display
+     *
+     * @param stage stage of all elements
      */
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
+        stage.setTitle("RITViewer");
+        Canvas canvas = new Canvas(model.getDIM(), model.getDIM());
+        Group group = new Group();
+        GraphicsContext gc = canvas.getGraphicsContext2D();
 
+        createImage(gc);
 
+        group.getChildren().add(canvas);
+        stage.setScene(new Scene(group));
 
         stage.show();
     }
 
     /**
      *
+     * set the gc with the 2 dimensional array
      *
+     * @param gc the graphic context to put picture
+     */
+    private void createImage(GraphicsContext gc) {
+        int x = 0;
+            for (int[] e : model.getImageMatrix()) {
+                int y = 0;
+                for (int i: e) {
+                    double d = i / 255.0;
+                    gc.setFill(new Color(d, d, d, 1.0));
+                    gc.fillRect(x, y, 1, 1);
+                    y++;
+                }
+                x++;
+            }
+    }
+
+
+    /**
      *
-     * @param args
+     * gets main arguments and launches gui elemetns
+     *
+     * @param args command line arguments
      */
     public static void main(String[] args) {
         arg = args;
         Application.launch(args);
     }
 
-
-    private static ArrayList<Integer> convertArray(ArrayList<String> arr) {
-        ArrayList<Integer> arr_i = new ArrayList<>(arr.size());
-        for (String e: arr) {
-            arr_i.add(Integer.parseInt(e));
-        }
-        return arr_i;
-    }
-
-    /**
-     *
-     *
-     *
-     * @param ritMain
-     */
-    private void refresh(RITMain ritMain) {
-        //ritMain.parse()
-    }
-
-    /**
-     *
-     *
-     *
-     * @param ritMain
-     */
-    @Override
-    public void update(RITMain ritMain) {
-        if (Platform.isFxApplicationThread()) {
-            this.refresh(ritMain);
-        } else {
-            Platform.runLater(() -> this.refresh(ritMain));
-        }
-    }
 }

@@ -14,11 +14,11 @@ import model.RITMain;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class RITViewer extends Application {
-    private ArrayList<Integer> arr_i;
     private static String[] arg;
     private RITMain model;
 
@@ -27,9 +27,10 @@ public class RITViewer extends Application {
      * initialize and check for errors
      *
      */
+
     @Override
     public void init() {
-        arr_i = new ArrayList<>();
+        ArrayList<Integer> arr_i = new ArrayList<>();
 
         try {
             try {
@@ -42,43 +43,24 @@ public class RITViewer extends Application {
                     if (temp > 255 || temp < 0) {
                         throw new CustomException("Pixel value outside the range 0-255.");
                     }
-                    this.arr_i.add(temp);
+                    arr_i.add(temp);
                 }
             } catch (FileNotFoundException e) {
                 throw new CustomException("File not found.");
             } catch (NumberFormatException e) {
                 throw new CustomException("Pixel value not an integer.");
             } catch (NoSuchElementException ignored) {
-                model = new RITMain(this.arr_i);
+                model = new RITMain(arr_i, 0);
 
-                if (!checkForSquare(model.getDIM())) {
+                if (!model.checkForSquare(model.getDIM())) {
                     throw new CustomException("Dimensions not a square.");
                 }
                 model.createImageMatrix();
+                System.out.println(Arrays.deepToString(model.getImageMatrix()));
             }
         } catch (CustomException e) {
             System.out.println(e.toString());
             Platform.exit();
-        }
-    }
-
-    /**
-     *
-     * check for the dimensions
-     *
-     * @param num the dimesnions
-     * @return whether it is a square or not
-     */
-    private boolean checkForSquare(int num) {
-        int check = 1;
-        while (true) {
-            if (num == check) {
-                return true;
-            } else if (num < check) {
-                return false;
-            } else {
-                check *= 2;
-            }
         }
     }
 
@@ -134,5 +116,6 @@ public class RITViewer extends Application {
         arg = args;
         Application.launch(args);
     }
+
 
 }

@@ -59,6 +59,7 @@ public class RITMain {
         }
     }
 
+
     public void createImageMatrix(RITQTNode node, int row, int col, int dim) {
         RITQTNode temp_ul = node.getUpperLeft();
         if (temp_ul.getVal() == -1) {

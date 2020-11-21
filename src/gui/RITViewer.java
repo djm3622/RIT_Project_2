@@ -56,7 +56,6 @@ public class RITViewer extends Application {
                     throw new CustomException("Dimensions not a square.");
                 }
                 model.createImageMatrix();
-                System.out.println(Arrays.deepToString(model.getImageMatrix()));
             }
         } catch (CustomException e) {
             System.out.println(e.toString());
@@ -105,7 +104,6 @@ public class RITViewer extends Application {
             }
     }
 
-
     /**
      *
      * gets main arguments and launches gui elemetns
@@ -116,6 +114,4 @@ public class RITViewer extends Application {
         arg = args;
         Application.launch(args);
     }
-
-
 }

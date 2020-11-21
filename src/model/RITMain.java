@@ -12,16 +12,13 @@ public class RITMain {
     private ArrayList<Integer> arr_i;
     private int DIM;
     private int[][] imageMatrix;
-    private final int selection;
     private int depth;
     private RITQTNode node;
-    private ArrayList<ArrayList<Integer>> arrayList;
 
     /**
      * Create a new board.
      */
     public RITMain(ArrayList<Integer> arr_i, int selection) {
-        this.selection = selection;
         switch (selection) {
             case (0) -> {
                 this.arr_i = arr_i;
@@ -58,7 +55,6 @@ public class RITMain {
             x++;
         }
     }
-
 
     public void createImageMatrix(RITQTNode node, int row, int col, int dim) {
         RITQTNode temp_ul = node.getUpperLeft();

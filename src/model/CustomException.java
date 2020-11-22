@@ -1,5 +1,10 @@
 package model;
 
+/**
+ * a custom exception to display the error message input
+ *
+ * @author David Millard
+ */
 public class CustomException extends Exception {
 
     private final String msg;

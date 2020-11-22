@@ -1,5 +1,6 @@
 package gui;
 
+//imports
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Group;
@@ -14,10 +15,14 @@ import model.RITMain;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
+/**
+ * displays the image of an uncompressed image file
+ *
+ * @author David Millard
+ */
 public class RITViewer extends Application {
     private static String[] arg;
     private RITMain model;

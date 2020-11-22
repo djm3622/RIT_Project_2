@@ -1,5 +1,6 @@
 package ptui;
 
+//imports
 import javafx.application.Platform;
 import model.CustomException;
 import model.RITMain;
@@ -12,32 +13,59 @@ import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
+/**
+ * uncompresses a rit file and writes a uncompressed txt file
+ *
+ * @author David Millard
+ */
 public class RITUncompress {
 
+    // class variables
     private String compressedRead;
     private String uncompressedWrite;
     private RITMain model;
 
-
+    /**
+     *
+     * constructor for ptui uncompress
+     * takes the args and intitializes
+     *
+     * @param compressedRead file to uncompresss
+     * @param uncompressedWrite file to write to
+     */
     public RITUncompress(String compressedRead, String uncompressedWrite) {
         this.compressedRead = compressedRead;
         this.uncompressedWrite = uncompressedWrite;
         initialize();
     }
 
+    /**
+     *
+     * runs when program is run
+     *
+     * @param args command line arguments
+     */
     public static void main(String[] args) {
         if (args.length != 2) {
             System.out.println("Usage: java RITUncompress compressed.rit uncompressed.txt");
             return;
         }
-        RITUncompress ptui = new RITUncompress(args[0], args[1]);
+        new RITUncompress(args[0], args[1]);
     }
 
+    /**
+     *
+     * the main run for the function, tests errors and runs functionality
+     *
+     */
     private void initialize() {
         ArrayList<Integer> arr_i = new ArrayList<>();
         try {
             try {
                 Scanner in = new Scanner(new FileReader(this.compressedRead));
+
+                FileWriter file = new FileWriter(uncompressedWrite);
+                file.close();
 
                 while (true) {
                     int temp = Integer.parseInt(in.nextLine());
@@ -46,9 +74,12 @@ public class RITUncompress {
 
             } catch (FileNotFoundException e) {
                 throw new CustomException("File not found.");
+            } catch (IOException e) {
+                throw new CustomException("File cannot be written to.");
             } catch (NoSuchElementException ignored) {
                 this.model = new RITMain(arr_i, 1);
-                createFile();
+                writeToFile();
+                displayStatistics();
             }
         } catch (CustomException e) {
             System.out.println(e.toString());
@@ -56,7 +87,13 @@ public class RITUncompress {
         }
     }
 
-    private void createFile() throws CustomException {
+    /**
+     *
+     * writes the uncompressed file
+     *
+     * @throws CustomException if file is not found
+     */
+    private void writeToFile() throws CustomException {
         try {
             FileWriter file = new FileWriter(uncompressedWrite);
             int[][] imageMatrix = this.model.getImageMatrix();
@@ -70,6 +107,38 @@ public class RITUncompress {
             file.close();
         } catch (IOException e) {
             throw new CustomException("File cannot be written to.");
+        }
+    }
+
+    /**
+     *
+     * display the stats of the umcompressing and run
+     *
+     */
+    private void displayStatistics() {
+        System.out.println("Uncompressing: " + compressedRead);
+        System.out.print("QTree: ");
+        printTree(model.getNode());
+        System.out.println("\nOutput file: " + uncompressedWrite);
+    }
+
+    /**
+     *
+     * preorder traversal of rit tree
+     *
+     * @param node rit tree
+     */
+    private void printTree(model.RITQTNode node) {
+        if (node != null) {
+            System.out.print(node + " ");
+            for (int i = 0; i < 4; i++) {
+                switch (i) {
+                    case (0) -> printTree(node.getUpperLeft());
+                    case (1) -> printTree(node.getUpperRight());
+                    case (2) -> printTree(node.getLowerLeft());
+                    case (3) -> printTree(node.getLowerRight());
+                }
+            }
         }
     }
 }

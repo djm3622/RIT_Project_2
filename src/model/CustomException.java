@@ -7,8 +7,15 @@ package model;
  */
 public class CustomException extends Exception {
 
+    // private variables
     private final String msg;
 
+    /**
+     *
+     * construcor for custom exception
+     *
+     * @param msg message to display
+     */
     public CustomException(String msg) {
         super(msg);
         this.msg = msg;

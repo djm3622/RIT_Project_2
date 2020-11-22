@@ -1,10 +1,14 @@
 package model;
 
+// imports
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-
+/**
+ * model to create the image matrix to display
+ *
+ * @author David Millard
+ */
 public class RITMain {
     /** the observers of this model */
     private List<Observer<RITMain>> observers;
@@ -35,14 +39,41 @@ public class RITMain {
         }
     }
 
+    /**
+     *
+     * the getter for dimesions
+     *
+     * @return the dimensions
+     */
     public int getDIM() {
         return this.DIM;
     }
 
+    /**
+     *
+     * getter for image matrix
+     *
+     * @return the image matrix
+     */
     public int[][] getImageMatrix() {
         return imageMatrix;
     }
 
+    /**
+     *
+     * getter for node
+     *
+     * @return the rit tree
+     */
+    public RITQTNode getNode() {
+        return this.node;
+    }
+
+    /**
+     *
+     * creates the image matrix using pixel data
+     *
+     */
     public void createImageMatrix() {
         int y = 0;
         int x = 0;
@@ -56,6 +87,15 @@ public class RITMain {
         }
     }
 
+    /**
+     *
+     * polymorphised image matrix using an rit tree
+     *
+     * @param node rit tree
+     * @param row row
+     * @param col column
+     * @param dim dimesions
+     */
     public void createImageMatrix(RITQTNode node, int row, int col, int dim) {
         RITQTNode temp_ul = node.getUpperLeft();
         if (temp_ul.getVal() == -1) {
@@ -86,6 +126,16 @@ public class RITMain {
         }
     }
 
+    /**
+     *
+     * builds the parts of matrix physically in the matrix
+     * used with the rit tree matrix creation
+     *
+     * @param row row
+     * @param col column
+     * @param dim dimensions
+     * @param val value to write
+     */
     private void buildImagineMatrix(int row, int col, int dim, int val) {
         for (int x = col; x < dim+col; x++) {
             for (int y = row; y < dim+row; y++) {
@@ -114,6 +164,13 @@ public class RITMain {
         }
     }
 
+    /**
+     *
+     * parses the list of ints to create the rit tree
+     *
+     * @param arr list of ints
+     * @return rit tree
+     */
     public RITQTNode parse(List<Integer> arr) {
         int arr_e = arr.remove(0);
         if (arr_e == -1) {

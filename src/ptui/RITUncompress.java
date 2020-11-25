@@ -118,27 +118,7 @@ public class RITUncompress {
     private void displayStatistics() {
         System.out.println("Uncompressing: " + compressedRead);
         System.out.print("QTree: ");
-        printTree(model.getNode());
+        model.printTree(model.getNode());
         System.out.println("\nOutput file: " + uncompressedWrite);
-    }
-
-    /**
-     *
-     * preorder traversal of rit tree
-     *
-     * @param node rit tree
-     */
-    private void printTree(model.RITQTNode node) {
-        if (node != null) {
-            System.out.print(node + " ");
-            for (int i = 0; i < 4; i++) {
-                switch (i) {
-                    case (0) -> printTree(node.getUpperLeft());
-                    case (1) -> printTree(node.getUpperRight());
-                    case (2) -> printTree(node.getLowerLeft());
-                    case (3) -> printTree(node.getLowerRight());
-                }
-            }
-        }
     }
 }

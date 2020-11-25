@@ -18,9 +18,10 @@ public class RITMain {
     private int[][] imageMatrix;
     private int depth;
     private RITQTNode node;
+    private int compressDepth = 1;
 
     /**
-     * Create a new board.
+     * run the selected options
      */
     public RITMain(ArrayList<Integer> arr_i, int selection) {
         switch (selection) {
@@ -35,6 +36,14 @@ public class RITMain {
                 this.imageMatrix = new int[(int) this.DIM][(int) this.DIM];
                 this.node = parse(arr_i);
                 createImageMatrix(this.node, 0, 0, this.DIM);
+            }
+            case (2) -> {
+                this.depth = arr_i.size();
+                this.DIM = (int) Math.sqrt(arr_i.size());
+                this.imageMatrix = new int[(int) this.DIM][(int) this.DIM];
+                this.arr_i = arr_i;
+                createImageMatrix();
+                this.node = compress(this.DIM, 0, 0);
             }
         }
     }
@@ -67,6 +76,26 @@ public class RITMain {
      */
     public RITQTNode getNode() {
         return this.node;
+    }
+
+    /**
+     *
+     * getter for array size
+     *
+     * @return array size
+     */
+    public int getDepth() {
+        return this.depth;
+    }
+
+    /**
+     *
+     * getter for tree size
+     *
+     * @return tree size
+     */
+    public int getCompressDepth() {
+        return this.compressDepth;
     }
 
     /**
@@ -177,6 +206,74 @@ public class RITMain {
             return new RITQTNode(arr_e, parse(arr), parse(arr), parse(arr), parse(arr));
         } else {
             return new RITQTNode(arr_e);
+        }
+    }
+
+    /**
+     *
+     * compress an uncompresses array to an ritqnode tree
+     *
+     * @param dim dim of matrix to recursively check parts
+     * @param row starting row
+     * @param col starting col
+     * @return an rit q node tree
+     */
+    public RITQTNode compress(int dim, int row, int col) {
+        if (checkMatrix(dim, row, col)) {
+            this.compressDepth++;
+            return new RITQTNode(this.imageMatrix[col][row]);
+        } else {
+            this.compressDepth++;
+            return new RITQTNode(-1, compress(dim/2, row, col),
+                                         compress(dim/2, row, col  + (dim / 2)),
+                                         compress(dim/2, row + (dim / 2), col),
+                                         compress(dim/2, row + (dim / 2), col  + (dim / 2)));
+        }
+    }
+
+    /**
+     *
+     * check that the parts of matrix are the same
+     *
+     * @param dim size of part of matrix
+     * @param row starting row
+     * @param col starting col
+     * @return whether the matrix is all one value
+     */
+    private boolean checkMatrix(int dim, int row, int col) {
+        boolean check = true;
+        int ref = this.imageMatrix[col][row];
+        for (int x = col; x < dim+col; x++) {
+            for (int y = row; y < dim+row; y++) {
+                if (this.imageMatrix[x][y] != ref) {
+                    check = false;
+                    break;
+                }
+            }
+            if (!check) {
+                break;
+            }
+        }
+        return check;
+    }
+
+    /**
+     *
+     * preorder traversal of rit tree
+     *
+     * @param node rit tree
+     */
+    public void printTree(model.RITQTNode node) {
+        if (node != null) {
+            System.out.print(node + " ");
+            for (int i = 0; i < 4; i++) {
+                switch (i) {
+                    case (0) -> printTree(node.getUpperLeft());
+                    case (1) -> printTree(node.getUpperRight());
+                    case (2) -> printTree(node.getLowerLeft());
+                    case (3) -> printTree(node.getLowerRight());
+                }
+            }
         }
     }
 }

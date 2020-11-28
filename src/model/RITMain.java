@@ -2,6 +2,7 @@ package model;
 
 // imports
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -46,6 +47,37 @@ public class RITMain {
                 this.node = compress(this.DIM, 0, 0);
             }
         }
+    }
+
+    public RITMain () {
+        this.observers = new LinkedList<>();
+    }
+
+    public void compressStart(ArrayList<Integer> arr_i) {
+        this.depth = arr_i.size();
+        this.DIM = (int) Math.sqrt(arr_i.size());
+        this.imageMatrix = new int[(int) this.DIM][(int) this.DIM];
+        this.arr_i = arr_i;
+        createImageMatrix();
+        this.node = compress(this.DIM, 0, 0);
+        notifyObservers();
+    }
+
+    public void uncompressStart(ArrayList<Integer> arr_i) {
+        this.depth = arr_i.remove(0);
+        this.DIM = (int) Math.sqrt(this.depth);
+        this.imageMatrix = new int[(int) this.DIM][(int) this.DIM];
+        this.node = parse(arr_i);
+        createImageMatrix(this.node, 0, 0, this.DIM);
+        notifyObservers();
+    }
+
+    public void viewStart(ArrayList<Integer> arr_i) {
+        this.arr_i = arr_i;
+        this.DIM = (int) Math.sqrt(arr_i.size());
+        this.imageMatrix = new int[(int) this.DIM][(int) this.DIM];
+        createImageMatrix();
+        notifyObservers();
     }
 
     /**
@@ -274,6 +306,22 @@ public class RITMain {
                     case (3) -> printTree(node.getLowerRight());
                 }
             }
+        }
+    }
+
+    /**
+     * The view calls this method to add themselves as an observer of the model.
+     *
+     * @param observer the observer
+     */
+    public void addObserver(Observer<RITMain> observer) {
+        this.observers.add(observer);
+    }
+
+    /** When the model changes, the observers are notified via their update() method */
+    private void notifyObservers() {
+        for (Observer<RITMain> obs: this.observers ) {
+            obs.update(this);
         }
     }
 }

@@ -106,7 +106,7 @@ public class RITUncompress {
             }
             file.close();
         } catch (IOException e) {
-            throw new CustomException("File cannot be written to.");
+            throw new CustomException("Output file cannot be written to.");
         }
     }
 

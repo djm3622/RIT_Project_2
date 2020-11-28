@@ -19,12 +19,12 @@ public class RITMain {
     private int[][] imageMatrix;
     private int depth;
     private RITQTNode node;
-    private int compressDepth = 1;
+    private int compressDepth;
 
     /**
      * run the selected options
      */
-    public RITMain(ArrayList<Integer> arr_i, int selection) {
+    public RITMain(ArrayList<Integer> arr_i, int selection) throws CustomException {
         switch (selection) {
             case (0) -> {
                 this.arr_i = arr_i;
@@ -39,6 +39,7 @@ public class RITMain {
                 createImageMatrix(this.node, 0, 0, this.DIM);
             }
             case (2) -> {
+                this.compressDepth = 1;
                 this.depth = arr_i.size();
                 this.DIM = (int) Math.sqrt(arr_i.size());
                 this.imageMatrix = new int[(int) this.DIM][(int) this.DIM];
@@ -53,7 +54,8 @@ public class RITMain {
         this.observers = new LinkedList<>();
     }
 
-    public void compressStart(ArrayList<Integer> arr_i) {
+    public void compressStart(ArrayList<Integer> arr_i) throws CustomException{
+        this.compressDepth = 1;
         this.depth = arr_i.size();
         this.DIM = (int) Math.sqrt(arr_i.size());
         this.imageMatrix = new int[(int) this.DIM][(int) this.DIM];
@@ -63,7 +65,7 @@ public class RITMain {
         notifyObservers();
     }
 
-    public void uncompressStart(ArrayList<Integer> arr_i) {
+    public void uncompressStart(ArrayList<Integer> arr_i) throws CustomException {
         this.depth = arr_i.remove(0);
         this.DIM = (int) Math.sqrt(this.depth);
         this.imageMatrix = new int[(int) this.DIM][(int) this.DIM];
@@ -72,7 +74,7 @@ public class RITMain {
         notifyObservers();
     }
 
-    public void viewStart(ArrayList<Integer> arr_i) {
+    public void viewStart(ArrayList<Integer> arr_i) throws CustomException {
         this.arr_i = arr_i;
         this.DIM = (int) Math.sqrt(arr_i.size());
         this.imageMatrix = new int[(int) this.DIM][(int) this.DIM];
@@ -135,16 +137,20 @@ public class RITMain {
      * creates the image matrix using pixel data
      *
      */
-    public void createImageMatrix() {
-        int y = 0;
-        int x = 0;
-        for (int e : this.arr_i) {
-            if (x == this.DIM) {
-                y++;
-                x = 0;
+    public void createImageMatrix() throws CustomException {
+        try {
+            int y = 0;
+            int x = 0;
+            for (int e : this.arr_i) {
+                if (x == this.DIM) {
+                    y++;
+                    x = 0;
+                }
+                imageMatrix[x][y] = e;
+                x++;
             }
-            imageMatrix[x][y] = e;
-            x++;
+        } catch (ArrayIndexOutOfBoundsException e) {
+            throw new CustomException("File not right type.");
         }
     }
 
@@ -157,33 +163,37 @@ public class RITMain {
      * @param col column
      * @param dim dimesions
      */
-    public void createImageMatrix(RITQTNode node, int row, int col, int dim) {
-        RITQTNode temp_ul = node.getUpperLeft();
-        if (temp_ul.getVal() == -1) {
-            createImageMatrix(temp_ul, row, col,dim / 2);
-        } else {
-            buildImagineMatrix(row, col, dim / 2, temp_ul.getVal());
-        }
+    public void createImageMatrix(RITQTNode node, int row, int col, int dim) throws CustomException {
+        try {
+            RITQTNode temp_ul = node.getUpperLeft();
+            if (temp_ul.getVal() == -1) {
+                createImageMatrix(temp_ul, row, col, dim / 2);
+            } else {
+                buildImagineMatrix(row, col, dim / 2, temp_ul.getVal());
+            }
 
-        RITQTNode temp_ur = node.getUpperRight();
-        if (temp_ur.getVal() == -1) {
-            createImageMatrix(temp_ur, row, col + (dim / 2),dim / 2);
-        } else {
-            buildImagineMatrix(row, col + (dim / 2), dim / 2, temp_ur.getVal());
-        }
+            RITQTNode temp_ur = node.getUpperRight();
+            if (temp_ur.getVal() == -1) {
+                createImageMatrix(temp_ur, row, col + (dim / 2), dim / 2);
+            } else {
+                buildImagineMatrix(row, col + (dim / 2), dim / 2, temp_ur.getVal());
+            }
 
-        RITQTNode temp_ll = node.getLowerLeft();
-        if (temp_ll.getVal() == -1) {
-            createImageMatrix(temp_ll, row + (dim / 2), col,dim / 2);
-        } else {
-            buildImagineMatrix(row + (dim / 2), col, dim / 2, temp_ll.getVal());
-        }
+            RITQTNode temp_ll = node.getLowerLeft();
+            if (temp_ll.getVal() == -1) {
+                createImageMatrix(temp_ll, row + (dim / 2), col, dim / 2);
+            } else {
+                buildImagineMatrix(row + (dim / 2), col, dim / 2, temp_ll.getVal());
+            }
 
-        RITQTNode temp_lr = node.getLowerRight();
-        if (temp_lr.getVal() == -1) {
-            createImageMatrix(temp_lr, row + (dim / 2), col + (dim / 2),dim / 2);
-        } else {
-            buildImagineMatrix(row + (dim / 2), col  + (dim / 2), dim / 2, temp_lr.getVal());
+            RITQTNode temp_lr = node.getLowerRight();
+            if (temp_lr.getVal() == -1) {
+                createImageMatrix(temp_lr, row + (dim / 2), col + (dim / 2), dim / 2);
+            } else {
+                buildImagineMatrix(row + (dim / 2), col + (dim / 2), dim / 2, temp_lr.getVal());
+            }
+        } catch (NullPointerException e) {
+            throw new CustomException("File type not right");
         }
     }
 
@@ -307,6 +317,23 @@ public class RITMain {
                 }
             }
         }
+    }
+
+    // work on this in morning
+    public String stringTree(model.RITQTNode node, String s) {
+        String temp = s;
+        if (node != null) {
+            for (int i = 0; i < 4; i++) {
+                switch (i) {
+                    case (0) -> temp = node.toString() + " " + stringTree(node.getUpperLeft(), temp);
+                    case (1) -> temp = node.toString() + " " + stringTree(node.getUpperRight(), temp);
+                    case (2) -> temp = node.toString() + " " + stringTree(node.getLowerLeft(), temp);
+                    case (3) -> temp = node.toString() + " " + stringTree(node.getLowerRight(), temp);
+                }
+            }
+            return temp;
+        }
+        return "";
     }
 
     /**

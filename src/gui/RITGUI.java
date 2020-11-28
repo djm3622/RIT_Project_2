@@ -67,6 +67,8 @@ public class RITGUI extends Application implements Observer<RITMain> {
         outputLBL.setMinWidth(600);
         outputLBL.setStyle("-fx-border-color: grey;");
 
+        Label bottomMessage = new Label("");
+
         inputButton.setOnAction(
                 e -> {
                     File file = fileChooser.showOpenDialog(stage);
@@ -96,9 +98,19 @@ public class RITGUI extends Application implements Observer<RITMain> {
                     this.selection = 1;
                     ArrayList<Integer> arr = checkValidCompress();
                     if (arr != null) {
-                        model.compressStart(arr);
+                        try {
+                            model.compressStart(arr);
+                            bottomMessage.setText("Compressing: " + inputFile +
+                                    "\nQTree: " + model.stringTree(model.getNode(), "") +
+                                    "\nOutput File: " + outputFile +
+                                    "\nRaw image size: " + model.getDepth() +
+                                    "\nCompressed image size: " + model.getCompressDepth() +
+                                    "\nCompression %: " + (((1 - ((double) model.getCompressDepth() / (double) model.getDepth()))) * 100));
+                        } catch (CustomException o) {
+                            bottomMessage.setText(o.getMessage());
+                        }
                     } else {
-                        System.out.println(errorMessage);
+                        bottomMessage.setText(errorMessage);
                     }
                 });
 
@@ -108,9 +120,16 @@ public class RITGUI extends Application implements Observer<RITMain> {
                     this.selection = 2;
                     ArrayList<Integer> arr = checkValidUncompress();
                     if (arr != null) {
-                        model.uncompressStart(arr);
+                        try {
+                            model.uncompressStart(arr);
+                            bottomMessage.setText("Uncompressing: " + inputFile +
+                                    "\nQTree: " + model.stringTree(model.getNode(), "") +
+                                    "\nOutput File: " + outputFile);
+                        } catch (CustomException o) {
+                            bottomMessage.setText(o.getMessage());
+                        }
                     } else {
-                        System.out.println(errorMessage);
+                        bottomMessage.setText(errorMessage);
                     }
                 });
 
@@ -120,9 +139,14 @@ public class RITGUI extends Application implements Observer<RITMain> {
                     this.selection = 0;
                     ArrayList<Integer> arr = checkValidView();
                     if (arr != null) {
-                        model.viewStart(arr);
+                        try {
+                            model.viewStart(arr);
+                            bottomMessage.setText("Viewing" + inputFile);
+                        } catch (CustomException o) {
+                            bottomMessage.setText(o.getMessage());
+                        }
                     } else {
-                        System.out.println(errorMessage);
+                        bottomMessage.setText(errorMessage);
                     }
                 });
 
@@ -135,12 +159,13 @@ public class RITGUI extends Application implements Observer<RITMain> {
                     inputFile = "";
                     canvas.setWidth(0);
                     canvas.setHeight(0);
+                    bottomMessage.setText("");
                 });
 
         MenuItem quitButton = new MenuItem("Quit");
         quitButton.setOnAction(
                 e -> {
-                    this.selection = 4;
+                    Platform.exit();
                 });
 
         menuButton.getItems().addAll(compressButton, uncompressButton, viewButton, clearButton, quitButton);
@@ -172,6 +197,7 @@ public class RITGUI extends Application implements Observer<RITMain> {
 
         bPane.setTop(menuButton);
         bPane.setCenter(rootGroup);
+        bPane.setBottom(bottomMessage);
 
         stage.setScene(new Scene(bPane));
         stage.setWidth(800);

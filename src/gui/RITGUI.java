@@ -101,11 +101,12 @@ public class RITGUI extends Application implements Observer<RITMain> {
                         try {
                             model.compressStart(arr);
                             bottomMessage.setText("Compressing: " + inputFile +
-                                    "\nQTree: " + model.stringTree(model.getNode(), "") +
+                                    "\nQTree: " + model.stringTree(model.getNode()) +
                                     "\nOutput File: " + outputFile +
                                     "\nRaw image size: " + model.getDepth() +
                                     "\nCompressed image size: " + model.getCompressDepth() +
                                     "\nCompression %: " + (((1 - ((double) model.getCompressDepth() / (double) model.getDepth()))) * 100));
+                            writeToFileCompressed();
                         } catch (CustomException o) {
                             bottomMessage.setText(o.getMessage());
                         }
@@ -123,8 +124,9 @@ public class RITGUI extends Application implements Observer<RITMain> {
                         try {
                             model.uncompressStart(arr);
                             bottomMessage.setText("Uncompressing: " + inputFile +
-                                    "\nQTree: " + model.stringTree(model.getNode(), "") +
+                                    "\nQTree: " + model.stringTree(model.getNode()) +
                                     "\nOutput File: " + outputFile);
+                            writeToFileUncompressed();
                         } catch (CustomException o) {
                             bottomMessage.setText(o.getMessage());
                         }
@@ -319,6 +321,66 @@ public class RITGUI extends Application implements Observer<RITMain> {
             this.refresh(model);
         } else {
             Platform.runLater(() -> this.refresh(model));
+        }
+    }
+
+    /**
+     *
+     * preorder traversal of rit tree
+     *
+     * @param node rit tree
+     */
+    private void writeTree(model.RITQTNode node, FileWriter file) throws IOException {
+        if (node != null) {
+            file.write(node.getVal() + "\n");
+            for (int i = 0; i < 4; i++) {
+                switch (i) {
+                    case (0) -> writeTree(node.getUpperLeft(), file);
+                    case (1) -> writeTree(node.getUpperRight(), file);
+                    case (2) -> writeTree(node.getLowerLeft(), file);
+                    case (3) -> writeTree(node.getLowerRight(), file);
+                }
+            }
+        }
+    }
+
+    /**
+     *
+     * writes the compressed file
+     *
+     * @throws CustomException if file is not found
+     */
+    private void writeToFileCompressed() throws CustomException {
+        try {
+            FileWriter file = new FileWriter(outputFile);
+            file.write(model.getDepth() + "\n");
+            writeTree(model.getNode(), file);
+            file.close();
+        } catch (IOException e) {
+            throw new CustomException("File cannot be written to.");
+        }
+    }
+
+    /**
+     *
+     * writes the uncompressed file
+     *
+     * @throws CustomException if file is not found
+     */
+    private void writeToFileUncompressed() throws CustomException {
+        try {
+            FileWriter file = new FileWriter(outputFile);
+            int[][] imageMatrix = this.model.getImageMatrix();
+            int dim = model.getDIM();
+            for (int x = 0; x < dim; x++) {
+                for (int y = 0; y < dim; y++) {
+                    String temp = Integer.toString(imageMatrix[y][x]);
+                    file.write(temp + "\n");
+                }
+            }
+            file.close();
+        } catch (IOException e) {
+            throw new CustomException("Output file cannot be written to.");
         }
     }
 }

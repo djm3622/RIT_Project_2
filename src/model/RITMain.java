@@ -1,6 +1,8 @@
 package model;
 
 // imports
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -20,6 +22,7 @@ public class RITMain {
     private int depth;
     private RITQTNode node;
     private int compressDepth;
+    private String s;
 
     /**
      * run the selected options
@@ -54,7 +57,8 @@ public class RITMain {
         this.observers = new LinkedList<>();
     }
 
-    public void compressStart(ArrayList<Integer> arr_i) throws CustomException{
+    public void compressStart(ArrayList<Integer> arr_i) throws CustomException {
+        s = "";
         this.compressDepth = 1;
         this.depth = arr_i.size();
         this.DIM = (int) Math.sqrt(arr_i.size());
@@ -66,6 +70,7 @@ public class RITMain {
     }
 
     public void uncompressStart(ArrayList<Integer> arr_i) throws CustomException {
+        s = "";
         this.depth = arr_i.remove(0);
         this.DIM = (int) Math.sqrt(this.depth);
         this.imageMatrix = new int[(int) this.DIM][(int) this.DIM];
@@ -150,7 +155,7 @@ public class RITMain {
                 x++;
             }
         } catch (ArrayIndexOutOfBoundsException e) {
-            throw new CustomException("File not right type.");
+            throw new CustomException("File not right type: " + e.getMessage());
         }
     }
 
@@ -193,7 +198,7 @@ public class RITMain {
                 buildImagineMatrix(row + (dim / 2), col + (dim / 2), dim / 2, temp_lr.getVal());
             }
         } catch (NullPointerException e) {
-            throw new CustomException("File type not right");
+            throw new CustomException("File type not right: " + e.getMessage());
         }
     }
 
@@ -260,7 +265,7 @@ public class RITMain {
      * @param col starting col
      * @return an rit q node tree
      */
-    public RITQTNode compress(int dim, int row, int col) {
+    public RITQTNode compress(int dim, int row, int col) throws CustomException {
         if (checkMatrix(dim, row, col)) {
             this.compressDepth++;
             return new RITQTNode(this.imageMatrix[col][row]);
@@ -282,21 +287,25 @@ public class RITMain {
      * @param col starting col
      * @return whether the matrix is all one value
      */
-    private boolean checkMatrix(int dim, int row, int col) {
-        boolean check = true;
-        int ref = this.imageMatrix[col][row];
-        for (int x = col; x < dim+col; x++) {
-            for (int y = row; y < dim+row; y++) {
-                if (this.imageMatrix[x][y] != ref) {
-                    check = false;
+    private boolean checkMatrix(int dim, int row, int col) throws CustomException {
+        try {
+            boolean check = true;
+            int ref = this.imageMatrix[col][row];
+            for (int x = col; x < dim + col; x++) {
+                for (int y = row; y < dim + row; y++) {
+                    if (this.imageMatrix[x][y] != ref) {
+                        check = false;
+                        break;
+                    }
+                }
+                if (!check) {
                     break;
                 }
             }
-            if (!check) {
-                break;
-            }
+            return check;
+        } catch (ArrayIndexOutOfBoundsException e) {
+            throw new CustomException("File type not right: " + e.getMessage());
         }
-        return check;
     }
 
     /**
@@ -320,20 +329,20 @@ public class RITMain {
     }
 
     // work on this in morning
-    public String stringTree(model.RITQTNode node, String s) {
-        String temp = s;
+    // build a string in global var
+    public String stringTree(model.RITQTNode node) {
         if (node != null) {
+            this.s = s + " " + node + " ";
             for (int i = 0; i < 4; i++) {
                 switch (i) {
-                    case (0) -> temp = node.toString() + " " + stringTree(node.getUpperLeft(), temp);
-                    case (1) -> temp = node.toString() + " " + stringTree(node.getUpperRight(), temp);
-                    case (2) -> temp = node.toString() + " " + stringTree(node.getLowerLeft(), temp);
-                    case (3) -> temp = node.toString() + " " + stringTree(node.getLowerRight(), temp);
+                    case (0) -> stringTree(node.getUpperLeft());
+                    case (1) -> stringTree(node.getUpperRight());
+                    case (2) -> stringTree(node.getLowerLeft());
+                    case (3) -> stringTree(node.getLowerRight());
                 }
             }
-            return temp;
         }
-        return "";
+        return this.s;
     }
 
     /**

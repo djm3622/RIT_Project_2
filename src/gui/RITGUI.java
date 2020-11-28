@@ -22,17 +22,26 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
+/**
+ * gui that carries out all fucntion of rit compress, uncompress, and view
+ *
+ * @author David Millard
+ */
 
 public class RITGUI extends Application implements Observer<RITMain> {
 
     private RITMain model;
     private String inputFile;
     private String outputFile;
-    private int selection;
     private String errorMessage;
-    GraphicsContext gc;
-    Canvas canvas;
+    private GraphicsContext gc;
+    private Canvas canvas;
 
+    /**
+     *
+     * sets default parameters and begins model observation
+     *
+     */
     @Override
     public void init() {
         this.model = new RITMain();
@@ -95,7 +104,6 @@ public class RITGUI extends Application implements Observer<RITMain> {
         MenuItem compressButton = new MenuItem("Compress");
         compressButton.setOnAction(
                 e -> {
-                    this.selection = 1;
                     ArrayList<Integer> arr = checkValidCompress();
                     if (arr != null) {
                         try {
@@ -118,7 +126,6 @@ public class RITGUI extends Application implements Observer<RITMain> {
         MenuItem uncompressButton = new MenuItem("Uncompress");
         uncompressButton.setOnAction(
                 e -> {
-                    this.selection = 2;
                     ArrayList<Integer> arr = checkValidUncompress();
                     if (arr != null) {
                         try {
@@ -138,7 +145,6 @@ public class RITGUI extends Application implements Observer<RITMain> {
         MenuItem viewButton = new MenuItem("View");
         viewButton.setOnAction(
                 e -> {
-                    this.selection = 0;
                     ArrayList<Integer> arr = checkValidView();
                     if (arr != null) {
                         try {
@@ -207,6 +213,12 @@ public class RITGUI extends Application implements Observer<RITMain> {
         stage.show();
     }
 
+    /**
+     *
+     * error checks the uncompression file and output file for possible issues
+     *
+     * @return an arraylist null or full
+     */
     private ArrayList<Integer> checkValidUncompress() {
         ArrayList<Integer> arr_i = new ArrayList<>();
         try {
@@ -236,6 +248,12 @@ public class RITGUI extends Application implements Observer<RITMain> {
         return null;
     }
 
+    /**
+     *
+     * error checks the compression file and output file for possible issues
+     *
+     * @return an arraylist null or full
+     */
     private ArrayList<Integer> checkValidCompress() {
         ArrayList<Integer> arr_i = new ArrayList<>();
         try {
@@ -265,6 +283,12 @@ public class RITGUI extends Application implements Observer<RITMain> {
         return null;
     }
 
+    /**
+     *
+     * error checks the view file for possible issues
+     *
+     * @return an arraylist null or full
+     */
     private ArrayList<Integer> checkValidView() {
         ArrayList<Integer> arr_i = new ArrayList<>();
         try {
@@ -295,10 +319,22 @@ public class RITGUI extends Application implements Observer<RITMain> {
         return null;
     }
 
+    /**
+     *
+     * launches the thread
+     *
+     * @param args command line args
+     */
     public static void main(String[] args) {
         Application.launch(args);
     }
 
+    /**
+     *
+     * refresshes the gui from nofication
+     *
+     * @param ritMain model
+     */
     private void refresh(RITMain ritMain) {
         canvas.setWidth(model.getDIM());
         canvas.setHeight(model.getDIM());
@@ -315,6 +351,12 @@ public class RITGUI extends Application implements Observer<RITMain> {
         }
     }
 
+    /**
+     *
+     * called when model notifies
+     *
+     * @param ritMain model
+     */
     @Override
     public void update(RITMain ritMain) {
         if (Platform.isFxApplicationThread()) {

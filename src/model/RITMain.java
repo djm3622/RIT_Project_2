@@ -1,8 +1,6 @@
 package model;
 
 // imports
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -53,10 +51,22 @@ public class RITMain {
         }
     }
 
+    /**
+     *
+     * constructor for gui to add itself to start observers implementation
+     *
+     */
     public RITMain () {
         this.observers = new LinkedList<>();
     }
 
+    /**
+     *
+     * carries out the compression of file when ran
+     *
+     * @param arr_i array indexes
+     * @throws CustomException an exception holding error details
+     */
     public void compressStart(ArrayList<Integer> arr_i) throws CustomException {
         s = "";
         this.compressDepth = 1;
@@ -69,6 +79,13 @@ public class RITMain {
         notifyObservers();
     }
 
+    /**
+     *
+     * carries out the uncompression of file when ran
+     *
+     * @param arr_i array indexes
+     * @throws CustomException an exception holding error details
+     */
     public void uncompressStart(ArrayList<Integer> arr_i) throws CustomException {
         s = "";
         this.depth = arr_i.remove(0);
@@ -79,6 +96,13 @@ public class RITMain {
         notifyObservers();
     }
 
+    /**
+     *
+     * carries out the view of file when ran
+     *
+     * @param arr_i array indexes
+     * @throws CustomException an exception holding error details
+     */
     public void viewStart(ArrayList<Integer> arr_i) throws CustomException {
         this.arr_i = arr_i;
         this.DIM = (int) Math.sqrt(arr_i.size());
@@ -328,8 +352,13 @@ public class RITMain {
         }
     }
 
-    // work on this in morning
-    // build a string in global var
+    /**
+     *
+     * builds a string representation of tree
+     *
+     * @param node rit tree
+     * @return string representation of tree
+     */
     public String stringTree(model.RITQTNode node) {
         if (node != null) {
             this.s = s + " " + node + " ";

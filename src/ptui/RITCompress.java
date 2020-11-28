@@ -12,6 +12,12 @@ import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
+/**
+ * compresses a file and writes a compressed txt file
+ *
+ * @author David Millard
+ */
+
 public class RITCompress {
     // class variables
     private String uncompressedRead;
